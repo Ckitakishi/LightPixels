@@ -1,0 +1,24 @@
+PODS:
+  - Bolts/Tasks (1.5.1)
+  - Parse (1.11.0):
+    - Bolts/Tasks (~> 1.5)
+  - RandomColorSwift (0.1.0)
+  - Realm (0.97.0):
+    - Realm/Headers (= 0.97.0)
+  - Realm/Headers (0.97.0)
+  - RealmSwift (0.97.0):
+    - Realm (= 0.97.0)
+
+DEPENDENCIES:
+  - Parse
+  - RandomColorSwift
+  - RealmSwift
+
+SPEC CHECKSUMS:
+  Bolts: a12663244b1d3351c738882e71902fc74db54f64
+  Parse: 886af46a0a677402f6374bb97ac212e795f70afe
+  RandomColorSwift: b2e95d6d3670def6d2f907ec7b7041138b268ac9
+  Realm: b498a6fb9d288b171ff98d0e2d4384c295be8990
+  RealmSwift: d014810dec75c9a3f1a33926d2dabfed855c582c
+
+COCOAPODS: 0.39.0
