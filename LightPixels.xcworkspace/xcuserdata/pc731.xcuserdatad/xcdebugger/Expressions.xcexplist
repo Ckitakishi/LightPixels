@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "ShareViewController.partition([PFObject], left : Int, right : Int) -&gt; Int:ShareViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "date.compare(dateLeft)">
+            </PersistentString>
+            <PersistentString
+               value = "calendar.compareDate(date, toDate: dateLeft, toUnitGranularity:NSCalendarUnit.NSSecondCalendarUnit)">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "GIFsViewController.collectionView(UICollectionView, cellForItemAtIndexPath : NSIndexPath) -&gt; UICollectionViewCell:GIFsViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.gifsData[indexPath.row]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

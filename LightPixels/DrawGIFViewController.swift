@@ -1,8 +1,8 @@
 //
-//  DrawImageViewController.swift
+//  DrawGIFViewController.swift
 //  LightPixels
 //
-//  Created by PC731 on 2016/01/04.
+//  Created by PC731 on 2016/01/07.
 //  Copyright © 2016年 chin. All rights reserved.
 //
 
@@ -11,11 +11,16 @@ import UIKit
 import RandomColorSwift
 import RealmSwift
 import Parse
+import ImageIO
+import MobileCoreServices
+import AssetsLibrary
 
-class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollectionViewDataSource,UICollectionViewDelegate {
+class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
     
-    @IBOutlet weak var colorCollection: UICollectionView!
     @IBOutlet weak var canvasScrollView: UIScrollView!
+    @IBOutlet weak var colorCollection: UICollectionView!
+    @IBOutlet weak var frameCollection: UICollectionView!
+    @IBOutlet weak var goToPreview: UIButton!
     
     var containerView: UIView!
     var backImageView: UIImageView = UIImageView(image: nil)
@@ -27,9 +32,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     var color: Color = UIColor.blackColor()
     
     var historyStack: [UIImage] = []
-    var pushHistory : Bool = true
-    
-    var isErase : Bool = false
+    var frameContainer: [UIImage] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +42,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         // remove blank of fist line
         self.automaticallyAdjustsScrollViewInsets = false
-
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -56,17 +59,15 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
             self.navigationController?.popViewControllerAnimated(true)
         }
-        
         alertController.addAction(cancelAction)
         
         let logintAction: UIAlertAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
-            // TODO: 摇晃动画？
             if(inputTextField!.text! != ""){
                 let scaner : NSScanner = NSScanner(string: inputTextField!.text!)
                 let val: UnsafeMutablePointer<Int32> = UnsafeMutablePointer<Int32>()
                 if(scaner.scanInt(val)&&scaner.atEnd){
                     let sideLength = Int(inputTextField!.text!)!
-                    if (sideLength <= 100 && sideLength > 0) {
+                    if (sideLength <= 100 && sideLength > 0 && inputTextField!.text! != "") {
                         self.initCanvas(sideLength);
                     }
                     else{
@@ -167,32 +168,25 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         self.colorCollection.delegate = self
         self.colorCollection.dataSource = self
         
+        self.frameCollection.delegate = self
+        self.frameCollection.dataSource = self
         
         self.view.addSubview(canvasScrollView)
         self.canvasScrollView.addSubview(containerView)
         self.containerView.addSubview(imageView)
         self.containerView.addSubview(backImageView)
+        
+        self.goToPreview.enabled = false
     }
     
     func tapHandle(gesture: UITapGestureRecognizer) {
+        
         let location: CGPoint = gesture.locationInView(self.imageView)
         drawRect(location)
-        if gesture.state == UIGestureRecognizerState.Recognized{
-            self.isErase = false
-        }
     }
     
     func panHandle(gesture: UIPanGestureRecognizer) {
-        if gesture.state == UIGestureRecognizerState.Recognized{
-            self.pushHistory = true
-            historyStackHandle(self.imageView.image!)
-            if  self.isErase == true {
-                self.isErase = false
-            }
-        }
-        else{
-            self.pushHistory = false
-        }
+        
         let location: CGPoint = gesture.locationInView(self.imageView)
         let numOfTouches = gesture.numberOfTouches()
         
@@ -200,9 +194,8 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
             
             drawRect(location)
         } else if (numOfTouches == 2) {
-            
+            print("test")
         }
-        
     }
     
     func pinchHandle(gesture: UIPinchGestureRecognizer) {
@@ -218,22 +211,14 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         let context:CGContextRef = UIGraphicsGetCurrentContext()!
         
-        if self.isErase == false {
-            CGContextSetFillColorWithColor(context, self.color.CGColor)
-            CGContextFillRect (context, CGRectMake (location.x - location.x % blockWidth, location.y - location.y % blockWidth, blockWidth, blockWidth))
-        }
-        else{
-            CGContextClearRect(context, CGRectMake (location.x - location.x % blockWidth, location.y - location.y % blockWidth, blockWidth, blockWidth))
-        }
+        CGContextSetFillColorWithColor(context, self.color.CGColor)
         
-        
+        CGContextFillRect (context, CGRectMake (location.x - location.x % blockWidth, location.y - location.y % blockWidth, blockWidth, blockWidth))
         
         self.imageView.image = UIGraphicsGetImageFromCurrentImageContext()
         
         UIGraphicsEndImageContext()
-        if self.pushHistory == true {
-            historyStackHandle(self.imageView.image!)
-        }
+        historyStackHandle(self.imageView.image!)
     }
     
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
@@ -246,15 +231,36 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return 24
+        if (collectionView == self.colorCollection) {
+            return 24
+        } else {
+            return self.frameContainer.count
+        }
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        let cell = colorCollection.dequeueReusableCellWithReuseIdentifier("CollectionViewCell", forIndexPath: indexPath) as UICollectionViewCell
-        cell.backgroundColor = randomColor[indexPath.row]
-        return cell
+        if (collectionView == self.colorCollection) {
+            let cell = self.colorCollection.dequeueReusableCellWithReuseIdentifier("gifColorCell", forIndexPath: indexPath) as UICollectionViewCell
+            cell.backgroundColor = randomColor[indexPath.row]
+            return cell
+        } else {
+            let cell = self.frameCollection.dequeueReusableCellWithReuseIdentifier("gifFrameCell", forIndexPath: indexPath) as UICollectionViewCell
+           
+            let tempView = UIImageView(image: self.frameContainer[indexPath.row])
+            tempView.frame = CGRectMake(0, 0, cell.frame.width, cell.frame.height)
+            
+            if (cell.contentView.subviews.count > 0) {
+                for uv in cell.contentView.subviews {
+                    uv.removeFromSuperview()
+                }
+            }
+            
+            cell.contentView.addSubview(tempView)
+            cell.layer.borderWidth = 1
+            cell.layer.borderColor = UIColor.grayColor().CGColor
+            return cell
+        }
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -263,10 +269,8 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     @IBAction func undo(sender: UIButton) {
-        print("historyS.count ",self.historyStack.count)
         if (self.historyStack.count >= 2) {
             
-            print("undo")
             UIGraphicsBeginImageContext(self.imageView.frame.size)
             self.imageView.image = self.historyStack[self.historyStack.count - 2]
             UIGraphicsEndImageContext()
@@ -283,9 +287,9 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     @IBAction func clearBlock(sender: UIButton) {
-        self.isErase = true
+        self.color = UIColor.whiteColor()
     }
-   
+    
     @IBAction func colorAllBlock(sender: UIButton) {
         let width:CGFloat = self.view.bounds.width
         
@@ -308,38 +312,30 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     @IBAction func more(sender: UIBarButtonItem) {
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        var gifData: NSData?
         
-        let firstAction = UIAlertAction(title: "Save", style: .Default) {
+        self.createGIF(with: self.frameContainer, loopCount: 1, frameDelay: 0.125) { (data, error) -> () in
+            if error == nil {
+                gifData = data
+            }
+        }
+        
+        let firstAction = UIAlertAction(title: "Save To Album", style: .Default) {
             // attention
             action in
+            UIImageWriteToSavedPhotosAlbum(UIImage(data: gifData!)!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
             
-            self.saveInDB()
+            ALAssetsLibrary().writeImageDataToSavedPhotosAlbum(gifData, metadata: nil, completionBlock: { (assetURL: NSURL!, error: NSError!) -> Void in
+                print(assetURL)
+            })
+            self.saveInDB(self.frameContainer)
+        }
+        
+        let secondAction = UIAlertAction(title: "Upload and Share", style: .Default) {
+            action in
             
-            let realm = try! Realm()
-            if (realm.objects(Setting).count == 0) {
-                try! realm.write {
-                    let st = Setting()
-                    realm.add(st)
-                }
-            }
-            
-            print(realm.objects(Setting))
-            let setting = realm.objects(Setting)[0]
-            
-            if (setting.album) {
-                if (setting.upload) {
-                    UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, nil, nil)
-                } else {
-                     UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
-                }
-                
-                self.shouldUploadImage(self.imageView.image!)
-            }
-            
-            if (!setting.album && !setting.upload) {
-                self.navigationController?.popViewControllerAnimated(true)
-            }
-            
+            self.shouldUploadImage(self.imageView.image!)
+//            self.saveInDB()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) {
@@ -347,7 +343,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
         
         alertController.addAction(firstAction)
-        
+        alertController.addAction(secondAction)
         alertController.addAction(cancelAction)
         
         //For ipad And Univarsal Device
@@ -358,24 +354,23 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         alertController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Up
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        presentViewController(alertController, animated: true, completion: nil)
         
     }
     
-    func saveInDB() {
-        // write in realm
+    func saveInDB(gifData: [UIImage]) {
         
         let realm = try! Realm()
         // 每个线程只需要使用一次即可
         
-        let image = Image()
-        image.name = "test"
-        image.id = String(NSDate().timeIntervalSince1970)
-        image.data = UIImagePNGRepresentation(self.imageView.image!)
+        let gif = GIF()
+        gif.name = "test"
+        gif.id = String(NSDate().timeIntervalSince1970)
+        gif.data = NSKeyedArchiver.archivedDataWithRootObject(gifData)
         
         // 通过事务将数据添加到 Realm 中
         try! realm.write() {
-            realm.add(image)
+            realm.add(gif)
         }
         
     }
@@ -389,6 +384,8 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
             alert = UIAlertController(title: "Success",
                 message: "Your pixel art is successfully saved.",
                 preferredStyle: .Alert)
+            
+            
         } else {
             alert = UIAlertController(title: "Fail",
                 message: error?.localizedDescription,
@@ -404,7 +401,6 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     
     
     func shouldUploadImage(image: UIImage){
-        
         let rImg = PFObject(className: "UIImage")
         
         let imgData = UIImagePNGRepresentation(image)!
@@ -418,21 +414,64 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
                 alert = UIAlertController(title: "upload success",
                     message: "Your pixel art is successfully uploaded.",
                     preferredStyle: .Alert)
-
+                
+                
             } else {
                 alert = UIAlertController(title: "Fail",
                     message: error?.localizedDescription,
                     preferredStyle: .Alert)
             }
             
-            alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: {
-                (action:UIAlertAction!) -> Void in
-                self.navigationController?.popViewControllerAnimated(true)
-            }))
+            alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
             self.presentViewController(alert, animated: true, completion: nil)
             
         }
     }
     
+    @IBAction func addFrame(sender: UIButton) {
+        
+        self.frameContainer.append(self.imageView.image!)
+        self.frameCollection.reloadData()
+        if self.goToPreview.enabled == false {
+            self.goToPreview.enabled = true
+        }
+        
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+        if (segue.identifier == "preview") {
+            let preview = segue.destinationViewController as! GIFPreviewDetailController;
+            preview.imageData = self.frameContainer
+        }
+    }
+    
+
+    // based on https://gist.github.com/westerlund/eae8ec71cdac88be7c3a
+    func createGIF(with images: [UIImage], loopCount: Int, frameDelay: Double, completion: (data: NSData?, error: NSError?) -> ()) {
+        
+        let fileProperties = [kCGImagePropertyGIFDictionary as String: [kCGImagePropertyGIFLoopCount as String: loopCount]]
+        let frameProperties = [kCGImagePropertyGIFDictionary as String: [kCGImagePropertyGIFDelayTime as String: frameDelay]]
+        
+        let documentsDirectory = NSTemporaryDirectory()
+        let url: NSURL? = NSURL(fileURLWithPath: documentsDirectory).URLByAppendingPathComponent("animated.gif")
+        
+        if let url = url {
+            let destination = CGImageDestinationCreateWithURL(url, kUTTypeGIF, images.count, nil)
+            CGImageDestinationSetProperties(destination!, fileProperties)
+            
+            for i in 0...images.count-1 {
+                CGImageDestinationAddImage(destination!, images[i].CGImage!, frameProperties)
+            }
+            
+            if CGImageDestinationFinalize(destination!) {
+                completion(data: NSData(contentsOfURL: url), error: nil)
+            } else {
+                completion(data: nil, error: NSError?())
+            }
+        } else  {
+            completion(data: nil, error: NSError?())
+        }
+    }
+
     
 }
