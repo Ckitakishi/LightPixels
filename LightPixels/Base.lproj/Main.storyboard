@@ -729,11 +729,11 @@
             </objects>
             <point key="canvasLocation" x="88" y="-572"/>
         </scene>
-        <!--animation-->
+        <!--gifs-->
         <scene sceneID="aaZ-6p-hd7">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="onF-cI-fMW" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="animation" image="gifs.png" id="YCV-8e-rqx"/>
+                    <tabBarItem key="tabBarItem" title="gifs" image="gifs.png" id="YCV-8e-rqx"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Xfj-9J-uS3">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

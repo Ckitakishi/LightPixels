@@ -51,7 +51,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         var inputTextField: UITextField?
         
-        let alertController: UIAlertController = UIAlertController(title: nil, message: "Input length of side.", preferredStyle: .Alert)
+        let alertController: UIAlertController = UIAlertController(title: nil, message: NSLocalizedString("input_sidelength", comment: ""), preferredStyle: .Alert)
         
         let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
             self.navigationController?.popViewControllerAnimated(true)
@@ -266,7 +266,6 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         print("historyS.count ",self.historyStack.count)
         if (self.historyStack.count >= 2) {
             
-            print("undo")
             UIGraphicsBeginImageContext(self.imageView.frame.size)
             self.imageView.image = self.historyStack[self.historyStack.count - 2]
             UIGraphicsEndImageContext()
@@ -309,7 +308,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
         
-        let firstAction = UIAlertAction(title: "Save", style: .Default) {
+        let firstAction = UIAlertAction(title: NSLocalizedString("save", comment: ""), style: .Default) {
             // attention
             action in
             
@@ -323,26 +322,25 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
                 }
             }
             
-            print(realm.objects(Setting))
             let setting = realm.objects(Setting)[0]
             
             if (setting.album) {
                 if (setting.upload) {
                     UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, nil, nil)
+                    self.shouldUploadImage(self.imageView.image!)
                 } else {
                      UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
                 }
-                
-                self.shouldUploadImage(self.imageView.image!)
+            } else {
+                if (setting.upload) {
+                    self.shouldUploadImage(self.imageView.image!)
+                } else {
+                    self.navigationController?.popViewControllerAnimated(true)
+                }
             }
-            
-            if (!setting.album && !setting.upload) {
-                self.navigationController?.popViewControllerAnimated(true)
-            }
-            
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) {
+        let cancelAction = UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .Cancel) {
             action in
         }
         
@@ -386,16 +384,16 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         var alert: UIAlertController
         
         if error == nil {
-            alert = UIAlertController(title: "Success",
-                message: "Your pixel art is successfully saved.",
+            alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
+                message: NSLocalizedString("success_info", comment: ""),
                 preferredStyle: .Alert)
         } else {
-            alert = UIAlertController(title: "Fail",
+            alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
                 message: error?.localizedDescription,
                 preferredStyle: .Alert)
         }
         
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: {
+        alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: {
             (action:UIAlertAction!) -> Void in
             self.navigationController?.popViewControllerAnimated(true)
         }))
@@ -415,17 +413,17 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
             var alert: UIAlertController
             
             if error == nil {
-                alert = UIAlertController(title: "upload success",
-                    message: "Your pixel art is successfully uploaded.",
+                alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
+                    message: NSLocalizedString("success_info", comment: ""),
                     preferredStyle: .Alert)
 
             } else {
-                alert = UIAlertController(title: "Fail",
+                alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
                     message: error?.localizedDescription,
                     preferredStyle: .Alert)
             }
             
-            alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: {
+            alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: {
                 (action:UIAlertAction!) -> Void in
                 self.navigationController?.popViewControllerAnimated(true)
             }))

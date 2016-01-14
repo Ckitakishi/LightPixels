@@ -1,0 +1,27 @@
+
+/* Class = "UITabBarItem"; title = "images"; ObjectID = "4Ky-nj-bRJ"; */
+"4Ky-nj-bRJ.title" = "图片";
+
+/* Class = "UINavigationItem"; title = "Images"; ObjectID = "4bb-uF-ObV"; */
+"4bb-uF-ObV.title" = "图片";
+
+/* Class = "UIButton"; normalTitle = "Preview"; ObjectID = "7Bj-pm-4wQ"; */
+"7Bj-pm-4wQ.normalTitle" = "预览";
+
+/* Class = "UITabBarItem"; title = "setting"; ObjectID = "8ge-tR-6k2"; */
+"8ge-tR-6k2.title" = "设置";
+
+/* Class = "UINavigationItem"; title = "GIFs"; ObjectID = "Fxu-mf-N39"; */
+"Fxu-mf-N39.title" = "动图";
+
+/* Class = "UIButton"; normalTitle = "Add Frame"; ObjectID = "GML-8B-A4Y"; */
+"GML-8B-A4Y.normalTitle" = "添加一帧";
+
+/* Class = "UINavigationItem"; title = "Share"; ObjectID = "MIJ-3I-MS3"; */
+"MIJ-3I-MS3.title" = "分享";
+
+/* Class = "UITabBarItem"; title = "animation"; ObjectID = "YCV-8e-rqx"; */
+"YCV-8e-rqx.title" = "动画";
+
+/* Class = "UITabBarItem"; title = "share"; ObjectID = "zii-fe-7Yj"; */
+"zii-fe-7Yj.title" = "分享";

@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  LightPixels
+
+  Created by PC731 on 2016/01/14.
+  Copyright © 2016年 chin. All rights reserved.
+*/
+
+"input_sidelength" = "Please input the side length of canvas";
+
+"save" = "Save";
+
+"cancel" = "Cancel";
+
+"success" = "Success";
+
+"succss_info" = "Your pixel art is successfully saved.";
+
+"fail" = "Fail";
+
+"ok" = "OK";
+
+"clear" = "Clear";
+
+"to_album_auto" = "save to album automatically";
+
+"upload_auto" = "upload automatically";
+
+"clear_cache" = "clear cache";

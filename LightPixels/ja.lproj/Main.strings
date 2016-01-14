@@ -1,0 +1,27 @@
+
+/* Class = "UITabBarItem"; title = "images"; ObjectID = "4Ky-nj-bRJ"; */
+"4Ky-nj-bRJ.title" = "画像";
+
+/* Class = "UINavigationItem"; title = "Images"; ObjectID = "4bb-uF-ObV"; */
+"4bb-uF-ObV.title" = "画像";
+
+/* Class = "UIButton"; normalTitle = "Preview"; ObjectID = "7Bj-pm-4wQ"; */
+"7Bj-pm-4wQ.normalTitle" = "プレビュー";
+
+/* Class = "UITabBarItem"; title = "setting"; ObjectID = "8ge-tR-6k2"; */
+"8ge-tR-6k2.title" = "設定";
+
+/* Class = "UINavigationItem"; title = "GIFs"; ObjectID = "Fxu-mf-N39"; */
+"Fxu-mf-N39.title" = "アクション";
+
+/* Class = "UIButton"; normalTitle = "Add Frame"; ObjectID = "GML-8B-A4Y"; */
+"GML-8B-A4Y.normalTitle" = "フレームを追加";
+
+/* Class = "UINavigationItem"; title = "Share"; ObjectID = "MIJ-3I-MS3"; */
+"MIJ-3I-MS3.title" = "シェア";
+
+/* Class = "UITabBarItem"; title = "animation"; ObjectID = "YCV-8e-rqx"; */
+"YCV-8e-rqx.title" = "アクションフィギュア";
+
+/* Class = "UITabBarItem"; title = "share"; ObjectID = "zii-fe-7Yj"; */
+"zii-fe-7Yj.title" = "シェア";

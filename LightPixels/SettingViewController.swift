@@ -41,9 +41,9 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (section == 0) {
-            return "Save"
+            return NSLocalizedString("save", comment: "")
         } else {
-            return "Clear Cache"
+            return NSLocalizedString("clear", comment: "")
         }
     }
     
@@ -63,7 +63,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 self.saveToAlbumStatus = onOffControl.on
                 
-                cell.textLabel?.text = "save to album automatically"
+                cell.textLabel?.text = NSLocalizedString("to_album_auto", comment: "")
                 onOffControl.addTarget(self, action: "onSwitchAlbum:", forControlEvents: UIControlEvents.ValueChanged)
                 
                 cell.accessoryView = UIView(frame: onOffControl.frame)
@@ -78,7 +78,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
                 }
                 self.uploadStatus = onOffControl2.on
                 
-                cell.textLabel?.text = "upload automatically"
+                cell.textLabel?.text = NSLocalizedString("upload_auto", comment: "")
                 onOffControl2.addTarget(self, action: "onSwitchUpload:", forControlEvents: UIControlEvents.ValueChanged)
                 
                 cell.accessoryView = UIView(frame: onOffControl2.frame)
@@ -86,7 +86,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         } else if (indexPath.section == 1) {
             if (indexPath.row == 0) {
-                cell.textLabel?.text = "clear cache"
+                cell.textLabel?.text = NSLocalizedString("clear_cache", comment: "")
             }
         }
         

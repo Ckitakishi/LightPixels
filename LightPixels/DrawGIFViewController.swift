@@ -54,14 +54,14 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
         
         var inputTextField: UITextField?
         
-        let alertController: UIAlertController = UIAlertController(title: nil, message: "Input length of side.", preferredStyle: .Alert)
+        let alertController: UIAlertController = UIAlertController(title: nil, message: NSLocalizedString("input_sidelength", comment: ""), preferredStyle: .Alert)
         
-        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
+        let cancelAction: UIAlertAction = UIAlertAction(title: NSLocalizedString("fail", comment: ""), style: .Cancel) { action -> Void in
             self.navigationController?.popViewControllerAnimated(true)
         }
         alertController.addAction(cancelAction)
         
-        let logintAction: UIAlertAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
+        let logintAction: UIAlertAction = UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default) { action -> Void in
             if(inputTextField!.text! != ""){
                 let scaner : NSScanner = NSScanner(string: inputTextField!.text!)
                 let val: UnsafeMutablePointer<Int32> = UnsafeMutablePointer<Int32>()
@@ -320,30 +320,47 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
             }
         }
         
-        let firstAction = UIAlertAction(title: "Save To Album", style: .Default) {
+        let firstAction = UIAlertAction(title: NSLocalizedString("save", comment: ""), style: .Default) {
             // attention
             action in
-            UIImageWriteToSavedPhotosAlbum(UIImage(data: gifData!)!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
             
-            ALAssetsLibrary().writeImageDataToSavedPhotosAlbum(gifData, metadata: nil, completionBlock: { (assetURL: NSURL!, error: NSError!) -> Void in
-                print(assetURL)
-            })
             self.saveInDB(self.frameContainer)
-        }
-        
-        let secondAction = UIAlertAction(title: "Upload and Share", style: .Default) {
-            action in
             
-            self.shouldUploadImage(self.imageView.image!)
-//            self.saveInDB()
+            let realm = try! Realm()
+            if (realm.objects(Setting).count == 0) {
+                try! realm.write {
+                    let st = Setting()
+                    realm.add(st)
+                }
+            }
+            
+            let setting = realm.objects(Setting)[0]
+            
+            if (setting.album) {
+                if (setting.upload) {
+                    ALAssetsLibrary().writeImageDataToSavedPhotosAlbum(gifData, metadata: nil, completionBlock: { (assetURL: NSURL!, error: NSError!) -> Void in
+//                        self.shouldUploadImage(gifData)
+                    })
+                } else {
+                    ALAssetsLibrary().writeImageDataToSavedPhotosAlbum(gifData, metadata: nil, completionBlock: { (assetURL: NSURL!, error: NSError!) -> Void in
+                        self.saveInfo(error)
+                    })
+                }
+            } else {
+                if (setting.upload) {
+//                    self.shouldUploadImage(gifData)
+                } else {
+                    self.navigationController?.popViewControllerAnimated(true)
+
+                }
+            }
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) {
+        let cancelAction = UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .Cancel) {
             action in
         }
-        
+
         alertController.addAction(firstAction)
-        alertController.addAction(secondAction)
         alertController.addAction(cancelAction)
         
         //For ipad And Univarsal Device
@@ -376,23 +393,23 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
     }
     
     
-    func saveInfo(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
+    func saveInfo(error: NSError?) {
         
         var alert: UIAlertController
         
         if error == nil {
-            alert = UIAlertController(title: "Success",
-                message: "Your pixel art is successfully saved.",
+            alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
+                message: NSLocalizedString("success_info", comment: ""),
                 preferredStyle: .Alert)
             
             
         } else {
-            alert = UIAlertController(title: "Fail",
+            alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
                 message: error?.localizedDescription,
                 preferredStyle: .Alert)
         }
         
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: {
+        alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: {
             (action:UIAlertAction!) -> Void in
             self.navigationController?.popViewControllerAnimated(true)
         }))
@@ -411,18 +428,18 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
             var alert: UIAlertController
             
             if error == nil {
-                alert = UIAlertController(title: "upload success",
-                    message: "Your pixel art is successfully uploaded.",
+                alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
+                    message: NSLocalizedString("success_info", comment: ""),
                     preferredStyle: .Alert)
                 
                 
             } else {
-                alert = UIAlertController(title: "Fail",
+                alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
                     message: error?.localizedDescription,
                     preferredStyle: .Alert)
             }
             
-            alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: nil))
             self.presentViewController(alert, animated: true, completion: nil)
             
         }
