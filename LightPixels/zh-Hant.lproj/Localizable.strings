@@ -5,3 +5,25 @@
   Created by PC731 on 2016/01/14.
   Copyright © 2016年 chin. All rights reserved.
 */
+
+"input_sidelength" = "輸入畫布的邊長";
+
+"save" = "保存";
+
+"cancel" = "取消";
+
+"success" = "成功";
+
+"success_info" = "圖像保存成功";
+
+"fail" = "失敗";
+
+"ok" = "好的";
+
+"clear" = "清除";
+
+"to_album_auto" = "自動保存到相冊";
+
+"upload_auto" = "自動上傳";
+
+"clear_cache" = "清除緩存";

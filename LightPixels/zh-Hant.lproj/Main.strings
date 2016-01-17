@@ -3,7 +3,7 @@
 "4Ky-nj-bRJ.title" = "圖片";
 
 /* Class = "UINavigationItem"; title = "Images"; ObjectID = "4bb-uF-ObV"; */
-"4bb-uF-ObV.title" = "動圖";
+"4bb-uF-ObV.title" = "圖片";
 
 /* Class = "UIButton"; normalTitle = "Preview"; ObjectID = "7Bj-pm-4wQ"; */
 "7Bj-pm-4wQ.normalTitle" = "預覽";
@@ -24,4 +24,4 @@
 "YCV-8e-rqx.title" = "動圖";
 
 /* Class = "UITabBarItem"; title = "share"; ObjectID = "zii-fe-7Yj"; */
-"zii-fe-7Yj.title" = "share";
+"zii-fe-7Yj.title" = "分享";

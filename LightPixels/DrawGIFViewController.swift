@@ -268,6 +268,12 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
         self.color = self.randomColor[indexPath.row]
     }
     
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+            
+            return CGSizeMake(collectionView.bounds.height, collectionView.bounds.height)
+    }
+    
     @IBAction func undo(sender: UIButton) {
         if (self.historyStack.count >= 2) {
             
@@ -404,7 +410,7 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
             
             
         } else {
-            alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
+            alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                 message: error?.localizedDescription,
                 preferredStyle: .Alert)
         }
@@ -434,7 +440,7 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
                 
                 
             } else {
-                alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
+                alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                     message: error?.localizedDescription,
                     preferredStyle: .Alert)
             }

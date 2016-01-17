@@ -237,6 +237,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+        
         return self.containerView
     }
     
@@ -263,7 +264,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     @IBAction func undo(sender: UIButton) {
-        print("historyS.count ",self.historyStack.count)
+        
         if (self.historyStack.count >= 2) {
             
             UIGraphicsBeginImageContext(self.imageView.frame.size)
@@ -275,6 +276,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     func historyStackHandle(img: UIImage) {
+        
         if (self.historyStack.count >= 5) {
             self.historyStack.removeFirst()
         }
@@ -282,10 +284,12 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     @IBAction func clearBlock(sender: UIButton) {
+        
         self.isErase = true
     }
    
     @IBAction func colorAllBlock(sender: UIButton) {
+        
         let width:CGFloat = self.view.bounds.width
         
         UIGraphicsBeginImageContext(self.imageView.frame.size)
@@ -388,7 +392,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
                 message: NSLocalizedString("success_info", comment: ""),
                 preferredStyle: .Alert)
         } else {
-            alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
+            alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                 message: error?.localizedDescription,
                 preferredStyle: .Alert)
         }
@@ -418,7 +422,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
                     preferredStyle: .Alert)
 
             } else {
-                alert = UIAlertController(title: NSLocalizedString("fail", comment: ""),
+                alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                     message: error?.localizedDescription,
                     preferredStyle: .Alert)
             }
