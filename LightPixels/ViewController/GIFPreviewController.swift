@@ -31,7 +31,7 @@ class GIFPreviewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    @IBAction func close(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func close(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
 }

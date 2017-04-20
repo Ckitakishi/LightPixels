@@ -25,33 +25,33 @@ class SharePreviewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    @IBAction func close(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func close(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func saveToAlbum(sender: UIButton) {
-        UIImageWriteToSavedPhotosAlbum(self.preview.image!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
+    @IBAction func saveToAlbum(_ sender: UIButton) {
+        UIImageWriteToSavedPhotosAlbum(self.preview.image!, self, #selector(saveInfo(_:didFinishSavingWithError:contextInfo:)), nil)
     }
     
-    func saveInfo(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
+    func saveInfo(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
         
         var alert: UIAlertController
         
         if error == nil {
             alert = UIAlertController(title: "Success",
                 message: "Your pixel art is successfully saved.",
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
         } else {
             alert = UIAlertController(title: "Fail",
                 message: error?.localizedDescription,
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
         }
         
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: {
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
             (action:UIAlertAction!) -> Void in
-            self.navigationController?.popViewControllerAnimated(true)
+            self.navigationController?.popViewController(animated: true)
         }))
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 
 }

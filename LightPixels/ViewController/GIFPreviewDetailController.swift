@@ -24,10 +24,10 @@ class GIFPreviewDetailController: UIViewController {
     }
     
     func previewAnimation() {
-        NSTimer.scheduledTimerWithTimeInterval(
-            1,
+        Timer.scheduledTimer(
+            timeInterval: 1,
             target: self,
-            selector: Selector("play"),
+            selector: #selector(play),
             userInfo: nil,
             repeats: true)
     }

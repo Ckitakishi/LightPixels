@@ -27,13 +27,13 @@ class ImagesViewController: UIViewController, UICollectionViewDataSource, UIColl
         
         let realm = try! Realm()
         
-        for img in realm.objects(Image) {
-            self.imageData.insert(img, atIndex: 0)
+        for img in realm.objects(Image.self) {
+            self.imageData.insert(img, at: 0)
         }
         
         self.gallery.delegate = self
         self.gallery.dataSource = self
-        self.gallery.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: "ImageCell")
+        self.gallery.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "ImageCell")
         
         // remove blank of fist line
         self.automaticallyAdjustsScrollViewInsets = false
@@ -52,14 +52,14 @@ class ImagesViewController: UIViewController, UICollectionViewDataSource, UIColl
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
         let realm = try! Realm()
         self.imageData = []
         
-        for img in realm.objects(Image) {
-            self.imageData.insert(img, atIndex: 0)
+        for img in realm.objects(Image.self) {
+            self.imageData.insert(img, at: 0)
         }
         
         self.refresh()
@@ -67,22 +67,22 @@ class ImagesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return self.imageData.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = gallery.dequeueReusableCellWithReuseIdentifier("ImageCell", forIndexPath: indexPath) as UICollectionViewCell
+        let cell = gallery.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as UICollectionViewCell
         
         let tempView = UIImageView(image: UIImage(data: self.imageData[indexPath.row].data!))
-        tempView.frame = CGRectMake(0, 0, (self.width! - 16) / 2, (self.width! - 16) / 2)
+        tempView.frame = CGRect(x: 0, y: 0, width: (self.width! - 16) / 2, height: (self.width! - 16) / 2)
         
         if (cell.contentView.subviews.count > 0) {
             for uv in cell.contentView.subviews {
@@ -94,22 +94,22 @@ class ImagesViewController: UIViewController, UICollectionViewDataSource, UIColl
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // push
         self.selectedImage = self.imageData[indexPath.row]
-        performSegueWithIdentifier("imgPreview", sender: nil)
+        performSegue(withIdentifier: "imgPreview", sender: nil)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
             
-            return CGSizeMake((self.width! - 16) / 2, (self.width! - 16) / 2)
+            return CGSize(width: (self.width! - 16) / 2, height: (self.width! - 16) / 2)
     }
     
     // to preview, add edit and delete
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
         if (segue.identifier == "imgPreview") {
-            let preview = segue.destinationViewController as! ImagePreviewController
+            let preview = segue.destination as! ImagePreviewController
             preview.imagesData = self.selectedImage
         }
         
@@ -119,10 +119,10 @@ class ImagesViewController: UIViewController, UICollectionViewDataSource, UIColl
         let dataCount = self.imageData.count
         var i = 0
         
-        for img in realm.objects(Image) {
-            i++
+        for img in realm.objects(Image.self) {
+            i += 1
             if (i > dataCount) {
-                self.imageData.insert(img, atIndex: 0)
+                self.imageData.insert(img, at: 0)
             }
         }
     }

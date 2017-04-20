@@ -17,8 +17,8 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
     
     var width: CGFloat? = nil
     var imageFile: [UIImage]  = []
-    var imgPFobj : [NSDate] = []
-    let calendar = NSCalendar(identifier: NSCalendarIdentifierGregorian)!
+    var imgPFobj : [Date] = []
+    let calendar = Calendar(identifier: Calendar.Identifier.gregorian)
     var selectedIndex: Int? = nil
     
     override func viewDidLoad() {
@@ -35,7 +35,7 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
         // refresh control
         self.refreshControl = UIRefreshControl()
         //        self.refreshControl.attributedTitle = NSAttributedString(string: "")
-        self.refreshControl.addTarget(self, action: "refresh", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl.addTarget(self, action: #selector(refresh), for: UIControlEvents.valueChanged)
         self.shareGallery.addSubview(self.refreshControl)
         
         // remove blank of fist line
@@ -47,12 +47,12 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
         // Dispose of any resources that can be recreated.
     }
     
-    func retrievingImage(completion block: (result: Bool) -> Void) {
+    func retrievingImage(completion block: @escaping (_ result: Bool) -> Void) {
         var count = 0;
         let query = PFQuery(className:"UIImage")
-        query.orderByAscending("createdAt")
-        query.findObjectsInBackgroundWithBlock {
-            (objects: [PFObject]?, error: NSError?) -> Void in
+        query.order(byAscending: "createdAt")
+        query.findObjectsInBackground {
+            (objects: [PFObject]?, error: Error?) -> Void in
             
             if error == nil {
                 // The find succeeded.
@@ -66,19 +66,19 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
                 
                 if let objects = self.pfobjectQuickSort(objects, left: 0, right: objects!.count-2) {
                     for object in objects {
-                        self.imgPFobj.insert(object.createdAt! as NSDate, atIndex: 0)
-                        
-                        object["png"].getDataInBackgroundWithBlock {
-                            (imageData: NSData?, error: NSError?) -> Void in
+                        self.imgPFobj.insert(object.createdAt! as Date, at: 0)
+                        let imageFile = object["png"] as! PFFile
+                        imageFile.getDataInBackground {
+                            (imageData: Data?, error: Error?) -> Void in
                             if error == nil {
                                 if let imageData = imageData {
                                     
-                                    let index = self.imgPFobj.indexOf(object.createdAt!)
+                                    let index = self.imgPFobj.index(of: object.createdAt!)
                                     self.imageFile[index!]=UIImage(data: imageData)!
                                     
                                     count += 1
                                     if (count == objects.count) {
-                                        block(result: true)
+                                        block(true)
                                     }
                                 }
                             }
@@ -87,19 +87,20 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
                 }
             } else {
                 // Log details of the failure
-                print("Error: \(error!) \(error!.userInfo)")
+                print("Error: \(error!) \(error!.localizedDescription)")
             }
         }
         
     }
     
-    func partition(var arr: [PFObject], left: Int, right: Int) -> Int {
+    func partition(_ arr: [PFObject], left: Int, right: Int) -> Int {
+        var arr = arr
         
         var temp = arr
         var l = left
         for i in (left + 1)...(right + 1) {
-            let date = (temp[i].createdAt)! as NSDate
-            let dateLeft = (temp[left].createdAt)! as NSDate
+            let date = (temp[i].createdAt)! as Date
+            let dateLeft = (temp[left].createdAt)! as Date
             
             //            print(calendar.compareDate(date, toDate: dateLeft, toUnitGranularity: NSCalendarUnit.NSSecondCalendarUnit) == NSComparisonResult.OrderedAscending)
             //            print(date.timeIntervalSince1970, dateLeft.timeIntervalSince1970, date.timeIntervalSince1970 - dateLeft.timeIntervalSince1970)
@@ -118,7 +119,7 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
         return l
     }
     
-    func pfobjectQuickSort(arr: [PFObject]?, left: Int, right: Int) -> [PFObject]? {
+    @discardableResult func pfobjectQuickSort(_ arr: [PFObject]?, left: Int, right: Int) -> [PFObject]? {
         let index = partition(arr!, left: left, right: right)
         
         if (left < index - 1) {
@@ -132,25 +133,25 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
     
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return self.imageFile.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = shareGallery.dequeueReusableCellWithReuseIdentifier("shareCell", forIndexPath: indexPath) as UICollectionViewCell
+        let cell = shareGallery.dequeueReusableCell(withReuseIdentifier: "shareCell", for: indexPath) as UICollectionViewCell
     
         if(indexPath.row <= imgPFobj.count-1){
             
             let tempView : UIImageView = UIImageView(image: self.imageFile[indexPath.row] as UIImage)
         
-            tempView.frame = CGRectMake(0, 0, (self.width! - 16) / 2,   (self.width! - 16) / 2)
+            tempView.frame = CGRect(x: 0, y: 0, width: (self.width! - 16) / 2,   height: (self.width! - 16) / 2)
             if (cell.contentView.subviews.count > 0) {
                 for uv in cell.contentView.subviews {
                     uv.removeFromSuperview()
@@ -162,23 +163,23 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         // push, only image temporarily
 //        self.selectedIndex = indexPath.row
 //        performSegueWithIdentifier("sharePreview", sender: nil)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
             
-            return CGSizeMake((self.width! - 16) / 2, (self.width! - 16) / 2)
+            return CGSize(width: (self.width! - 16) / 2, height: (self.width! - 16) / 2)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
         if (segue.identifier == "sharePreview") {
-            let indexPath = self.shareGallery.indexPathForCell(sender as! UICollectionViewCell)
-            let preview = segue.destinationViewController as! SharePreviewController
+            let indexPath = self.shareGallery.indexPath(for: sender as! UICollectionViewCell)
+            let preview = segue.destination as! SharePreviewController
             preview.imageData = self.imageFile[indexPath!.row]
         }
     }

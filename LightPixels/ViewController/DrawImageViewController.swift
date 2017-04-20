@@ -24,7 +24,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     var width: CGFloat = 0
     var blockWidth: CGFloat = 0
     var randomColor: [Color]!
-    var color: Color = UIColor.blackColor()
+    var color: Color = UIColor.black
     
     var historyStack: [UIImage] = []
     var pushHistory : Bool = true
@@ -51,49 +51,49 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         var inputTextField: UITextField?
         
-        let alertController: UIAlertController = UIAlertController(title: nil, message: NSLocalizedString("input_sidelength", comment: ""), preferredStyle: .Alert)
+        let alertController: UIAlertController = UIAlertController(title: nil, message: NSLocalizedString("input_sidelength", comment: ""), preferredStyle: .alert)
         
-        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .Cancel) { action -> Void in
-            self.navigationController?.popViewControllerAnimated(true)
+        let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .cancel) { action -> Void in
+            self.navigationController?.popViewController(animated: true)
         }
         
         alertController.addAction(cancelAction)
         
-        let logintAction: UIAlertAction = UIAlertAction(title: "OK", style: .Default) { action -> Void in
+        let logintAction: UIAlertAction = UIAlertAction(title: "OK", style: .default) { action -> Void in
             // TODO: 摇晃动画？
             if(inputTextField!.text! != ""){
-                let scaner : NSScanner = NSScanner(string: inputTextField!.text!)
-                let val: UnsafeMutablePointer<Int32> = UnsafeMutablePointer<Int32>()
-                if(scaner.scanInt(val)&&scaner.atEnd){
+                let scaner : Scanner = Scanner(string: inputTextField!.text!)
+                let val = UnsafeMutablePointer<Int32>.allocate(capacity: 1)
+                if (scaner.scanInt32(val) && scaner.isAtEnd) {
                     let sideLength = Int(inputTextField!.text!)!
                     if (sideLength <= 100 && sideLength > 0) {
                         self.initCanvas(sideLength);
                     }
                     else{
-                        self.navigationController?.popViewControllerAnimated(true)
+                        self.navigationController?.popViewController(animated: true)
                     }
                 }
                 else{
-                    self.navigationController?.popViewControllerAnimated(true)
+                    self.navigationController?.popViewController(animated: true)
                 }
             }
             else{
-                self.navigationController?.popViewControllerAnimated(true)
+                self.navigationController?.popViewController(animated: true)
             }
         }
         alertController.addAction(logintAction)
         
-        alertController.addTextFieldWithConfigurationHandler { textField -> Void in
+        alertController.addTextField { textField -> Void in
             inputTextField = textField
-            inputTextField!.keyboardType = UIKeyboardType.NumberPad
+            inputTextField!.keyboardType = UIKeyboardType.numberPad
             textField.placeholder = "(0, 100]"
         }
         
-        presentViewController(alertController, animated: true, completion: nil)
+        present(alertController, animated: true, completion: nil)
         
     }
     
-    func initCanvas(sideLength: Int) {
+    func initCanvas(_ sideLength: Int) {
         
         width = self.view.bounds.width
         
@@ -104,24 +104,26 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         backImageView.layer.borderWidth = 1
         let gray = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
-        backImageView.layer.borderColor = gray.CGColor
+        backImageView.layer.borderColor = gray.cgColor
         
         UIGraphicsBeginImageContext(backImageView.frame.size)
-        let context:CGContextRef = UIGraphicsGetCurrentContext()!
-        CGContextSetShouldAntialias(context, false)
+        let context:CGContext = UIGraphicsGetCurrentContext()!
+        context.setShouldAntialias(false)
         
         // 格子数暂定为常量
         blockWidth = width / CGFloat(sideLength);
         
-        for (var i: CGFloat = 0; i < CGFloat(sideLength); i++) {
-            CGContextMoveToPoint(context, 0, i * blockWidth)
-            CGContextAddLineToPoint(context, width, i * blockWidth)
+        var i: CGFloat = 0
+        while (i < CGFloat(sideLength)) {
+            context.move(to: CGPoint(x: 0, y: i * blockWidth))
+            context.addLine(to: CGPoint(x: width, y: i * blockWidth))
             
-            CGContextMoveToPoint(context, i * blockWidth, 0)
-            CGContextAddLineToPoint(context, i * blockWidth, width)
-            CGContextSetLineWidth(context, 1)
-            CGContextSetRGBStrokeColor(context, 0.8, 0.8, 0.8, 1.0)
-            CGContextStrokePath(context)
+            context.move(to: CGPoint(x: i * blockWidth, y: 0))
+            context.addLine(to: CGPoint(x: i * blockWidth, y: width))
+            context.setLineWidth(1)
+            context.setStrokeColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
+            context.strokePath()
+            i = i + 1
         }
         
         
@@ -134,25 +136,25 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         UIGraphicsEndImageContext()
         
         
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: "pinchHandle:")
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchHandle(_:)))
         canvasScrollView.addGestureRecognizer(pinchGesture)
         
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: "tapHandle:")
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapHandle(_:)))
         imageView.addGestureRecognizer(tapGesture)
         
-        let panGesture = UIPanGestureRecognizer(target: self, action: "panHandle:")
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panHandle(_:)))
         panGesture.maximumNumberOfTouches = 1
         imageView.addGestureRecognizer(panGesture)
         
         
-        let panGesture2 = UIPanGestureRecognizer(target: self, action: "panHandle:")
+        let panGesture2 = UIPanGestureRecognizer(target: self, action: #selector(panHandle(_:)))
         panGesture2.maximumNumberOfTouches = 1
         //        panGesture2.minimumNumberOfTouches = 2
         canvasScrollView.addGestureRecognizer(panGesture2)
         
-        canvasScrollView.userInteractionEnabled = true
-        imageView.userInteractionEnabled = true
+        canvasScrollView.isUserInteractionEnabled = true
+        imageView.isUserInteractionEnabled = true
         
         
         self.canvasScrollView.delegate = self
@@ -163,7 +165,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         
         // 色盘初始化
-        self.randomColor = randomColorsCount(24, hue: .Random, luminosity: .Light)
+        self.randomColor = randomColors(count: 24, hue: .random, luminosity: .light)
         self.colorCollection.delegate = self
         self.colorCollection.dataSource = self
         
@@ -174,16 +176,16 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         self.containerView.addSubview(backImageView)
     }
     
-    func tapHandle(gesture: UITapGestureRecognizer) {
-        let location: CGPoint = gesture.locationInView(self.imageView)
+    func tapHandle(_ gesture: UITapGestureRecognizer) {
+        let location: CGPoint = gesture.location(in: self.imageView)
         drawRect(location)
-        if gesture.state == UIGestureRecognizerState.Recognized{
+        if gesture.state == UIGestureRecognizerState.recognized{
             self.isErase = false
         }
     }
     
-    func panHandle(gesture: UIPanGestureRecognizer) {
-        if gesture.state == UIGestureRecognizerState.Recognized{
+    func panHandle(_ gesture: UIPanGestureRecognizer) {
+        if gesture.state == UIGestureRecognizerState.recognized{
             self.pushHistory = true
             historyStackHandle(self.imageView.image!)
             if  self.isErase == true {
@@ -193,8 +195,8 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         else{
             self.pushHistory = false
         }
-        let location: CGPoint = gesture.locationInView(self.imageView)
-        let numOfTouches = gesture.numberOfTouches()
+        let location: CGPoint = gesture.location(in: self.imageView)
+        let numOfTouches = gesture.numberOfTouches
         
         if (numOfTouches == 1) {
             
@@ -205,25 +207,25 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
     }
     
-    func pinchHandle(gesture: UIPinchGestureRecognizer) {
+    func pinchHandle(_ gesture: UIPinchGestureRecognizer) {
         
     }
     
-    func drawRect(location: CGPoint) {
+    func drawRect(_ location: CGPoint) {
         
         let width:CGFloat = self.view.bounds.width
         
         UIGraphicsBeginImageContext(self.imageView.frame.size)
-        self.imageView.image!.drawInRect(CGRect(x: 0, y: 0, width: width, height: width))
+        self.imageView.image!.draw(in: CGRect(x: 0, y: 0, width: width, height: width))
         
-        let context:CGContextRef = UIGraphicsGetCurrentContext()!
+        let context:CGContext = UIGraphicsGetCurrentContext()!
         
         if self.isErase == false {
-            CGContextSetFillColorWithColor(context, self.color.CGColor)
-            CGContextFillRect (context, CGRectMake (location.x - location.x % blockWidth, location.y - location.y % blockWidth, blockWidth, blockWidth))
+            context.setFillColor(self.color.cgColor)
+            context.fill (CGRect (x: location.x - location.x.truncatingRemainder(dividingBy: blockWidth), y: location.y - location.y.truncatingRemainder(dividingBy: blockWidth), width: blockWidth, height: blockWidth))
         }
         else{
-            CGContextClearRect(context, CGRectMake (location.x - location.x % blockWidth, location.y - location.y % blockWidth, blockWidth, blockWidth))
+            context.clear(CGRect (x: location.x - location.x.truncatingRemainder(dividingBy: blockWidth), y: location.y - location.y.truncatingRemainder(dividingBy: blockWidth), width: blockWidth, height: blockWidth))
         }
         
         
@@ -236,34 +238,34 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
     }
     
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         
         return self.containerView
     }
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return 24
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = colorCollection.dequeueReusableCellWithReuseIdentifier("CollectionViewCell", forIndexPath: indexPath) as UICollectionViewCell
+        let cell = colorCollection.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as UICollectionViewCell
         cell.backgroundColor = randomColor[indexPath.row]
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         self.color = self.randomColor[indexPath.row]
     }
     
-    @IBAction func undo(sender: UIButton) {
+    @IBAction func undo(_ sender: UIButton) {
         
         if (self.historyStack.count >= 2) {
             
@@ -275,7 +277,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
     }
     
-    func historyStackHandle(img: UIImage) {
+    func historyStackHandle(_ img: UIImage) {
         
         if (self.historyStack.count >= 5) {
             self.historyStack.removeFirst()
@@ -283,23 +285,23 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         self.historyStack.append(img)
     }
     
-    @IBAction func clearBlock(sender: UIButton) {
+    @IBAction func clearBlock(_ sender: UIButton) {
         
         self.isErase = true
     }
    
-    @IBAction func colorAllBlock(sender: UIButton) {
+    @IBAction func colorAllBlock(_ sender: UIButton) {
         
         let width:CGFloat = self.view.bounds.width
         
         UIGraphicsBeginImageContext(self.imageView.frame.size)
-        self.imageView.image!.drawInRect(CGRect(x: 0, y: 0, width: width, height: width))
+        self.imageView.image!.draw(in: CGRect(x: 0, y: 0, width: width, height: width))
         
-        let context:CGContextRef = UIGraphicsGetCurrentContext()!
+        let context:CGContext = UIGraphicsGetCurrentContext()!
         
-        CGContextSetFillColorWithColor(context, self.color.CGColor)
+        context.setFillColor(self.color.cgColor)
         
-        CGContextFillRect (context, CGRectMake (0, 0, width, width))
+        context.fill (CGRect (x: 0, y: 0, width: width, height: width))
         
         self.imageView.image = UIGraphicsGetImageFromCurrentImageContext()
         
@@ -308,43 +310,43 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     
-    @IBAction func more(sender: UIBarButtonItem) {
+    @IBAction func more(_ sender: UIBarButtonItem) {
         
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let firstAction = UIAlertAction(title: NSLocalizedString("save", comment: ""), style: .Default) {
+        let firstAction = UIAlertAction(title: NSLocalizedString("save", comment: ""), style: .default) {
             // attention
             action in
             
             self.saveInDB()
             
             let realm = try! Realm()
-            if (realm.objects(Setting).count == 0) {
+            if (realm.objects(Setting.self).count == 0) {
                 try! realm.write {
                     let st = Setting()
                     realm.add(st)
                 }
             }
             
-            let setting = realm.objects(Setting)[0]
+            let setting = realm.objects(Setting.self)[0]
             
             if (setting.album) {
                 if (setting.upload) {
                     UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, nil, nil)
                     self.shouldUploadImage(self.imageView.image!)
                 } else {
-                     UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, "saveInfo:didFinishSavingWithError:contextInfo:", nil)
+                     UIImageWriteToSavedPhotosAlbum(self.imageView.image!, self, #selector(self.saveInfo(_:didFinishSavingWithError:contextInfo:)), nil)
                 }
             } else {
                 if (setting.upload) {
                     self.shouldUploadImage(self.imageView.image!)
                 } else {
-                    self.navigationController?.popViewControllerAnimated(true)
+                    self.navigationController?.popViewController(animated: true)
                 }
             }
         }
         
-        let cancelAction = UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .Cancel) {
+        let cancelAction = UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel) {
             action in
         }
         
@@ -358,9 +360,9 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
             popoverController.barButtonItem = sender
         }
         
-        alertController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.Up
+        alertController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.up
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
         
     }
     
@@ -372,7 +374,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
         let image = Image()
         image.name = "test"
-        image.id = String(NSDate().timeIntervalSince1970)
+        image.id = String(Date().timeIntervalSince1970)
         image.data = UIImagePNGRepresentation(self.imageView.image!)
         
         // 通过事务将数据添加到 Realm 中
@@ -383,29 +385,29 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     
-    func saveInfo(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
+    func saveInfo(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo:UnsafeRawPointer) {
         
         var alert: UIAlertController
         
         if error == nil {
             alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
                 message: NSLocalizedString("success_info", comment: ""),
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
         } else {
             alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                 message: error?.localizedDescription,
-                preferredStyle: .Alert)
+                preferredStyle: .alert)
         }
         
-        alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: {
+        alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default, handler: {
             (action:UIAlertAction!) -> Void in
-            self.navigationController?.popViewControllerAnimated(true)
+            self.navigationController?.popViewController(animated: true)
         }))
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     
-    func shouldUploadImage(image: UIImage){
+    func shouldUploadImage(_ image: UIImage){
         
         let rImg = PFObject(className: "UIImage")
         
@@ -413,25 +415,25 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         let pfImg = PFFile(data: imgData)
         rImg["png"] = pfImg
         
-        rImg.saveInBackgroundWithBlock { (success : Bool, error : NSError?) -> Void in
+        rImg.saveInBackground { (success : Bool, error : Error?) -> Void in
             var alert: UIAlertController
             
             if error == nil {
                 alert = UIAlertController(title: NSLocalizedString("success", comment: ""),
                     message: NSLocalizedString("success_info", comment: ""),
-                    preferredStyle: .Alert)
+                    preferredStyle: .alert)
 
             } else {
                 alert = UIAlertController(title: NSLocalizedString("cancel", comment: ""),
                     message: error?.localizedDescription,
-                    preferredStyle: .Alert)
+                    preferredStyle: .alert)
             }
             
-            alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .Default, handler: {
+            alert.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default, handler: {
                 (action:UIAlertAction!) -> Void in
-                self.navigationController?.popViewControllerAnimated(true)
+                self.navigationController?.popViewController(animated: true)
             }))
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             
         }
     }

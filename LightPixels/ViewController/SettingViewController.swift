@@ -31,7 +31,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         super.didReceiveMemoryWarning()
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (section == 0) {
             return 2
         } else {
@@ -39,7 +39,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if (section == 0) {
             return NSLocalizedString("save", comment: "")
         } else {
@@ -47,39 +47,39 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .Subtitle, reuseIdentifier: "SettingCell")
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "SettingCell")
         
         let realm = try! Realm()
         if (indexPath.section == 0) {
             let onOffControl = UISwitch()
             if (indexPath.row == 0) {
                 
-                if (realm.objects(Setting).count != 0) {
-                    let album = realm.objects(Setting)[0].album
-                    onOffControl.on = album
+                if (realm.objects(Setting.self).count != 0) {
+                    let album = realm.objects(Setting.self)[0].album
+                    onOffControl.isOn = album
                 } else {
-                    onOffControl.on = true
+                    onOffControl.isOn = true
                 }
-                self.saveToAlbumStatus = onOffControl.on
+                self.saveToAlbumStatus = onOffControl.isOn
                 
                 cell.textLabel?.text = NSLocalizedString("to_album_auto", comment: "")
-                onOffControl.addTarget(self, action: "onSwitchAlbum:", forControlEvents: UIControlEvents.ValueChanged)
+                onOffControl.addTarget(self, action: #selector(onSwitchAlbum(_:)), for: UIControlEvents.valueChanged)
                 
                 cell.accessoryView = UIView(frame: onOffControl.frame)
                 cell.accessoryView?.addSubview(onOffControl)
             } else if (indexPath.row == 1) {
                 let onOffControl2 = UISwitch()
-                if (realm.objects(Setting).count != 0) {
-                    let upload = realm.objects(Setting)[0].upload
-                    onOffControl2.on = upload
+                if (realm.objects(Setting.self).count != 0) {
+                    let upload = realm.objects(Setting.self)[0].upload
+                    onOffControl2.isOn = upload
                 } else {
-                    onOffControl2.on = true
+                    onOffControl2.isOn = true
                 }
-                self.uploadStatus = onOffControl2.on
+                self.uploadStatus = onOffControl2.isOn
                 
                 cell.textLabel?.text = NSLocalizedString("upload_auto", comment: "")
-                onOffControl2.addTarget(self, action: "onSwitchUpload:", forControlEvents: UIControlEvents.ValueChanged)
+                onOffControl2.addTarget(self, action: #selector(onSwitchUpload(_:)), for: UIControlEvents.valueChanged)
                 
                 cell.accessoryView = UIView(frame: onOffControl2.frame)
                 cell.accessoryView?.addSubview(onOffControl2)
@@ -93,7 +93,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if ((indexPath.section == 1) && (indexPath.row == 0)) {
             let realm = try! Realm()
             
@@ -103,30 +103,30 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
     
-    func onSwitchAlbum(sender: UISwitch) {
+    func onSwitchAlbum(_ sender: UISwitch) {
         let realm = try! Realm()
         let setting = Setting()
-        let temp = realm.objects(Setting)[0]
+        let temp = realm.objects(Setting.self)[0]
         
         try! realm.write {
-            if (realm.objects(Setting).count == 0) {
+            if (realm.objects(Setting.self).count == 0) {
                 realm.add(setting)
             }
             temp.album = !self.saveToAlbumStatus
         }
     }
     
-    func onSwitchUpload(sender: UISwitch) {
+    func onSwitchUpload(_ sender: UISwitch) {
         let realm = try! Realm()
         let setting = Setting()
-        let temp = realm.objects(Setting)[0]
+        let temp = realm.objects(Setting.self)[0]
         
         try! realm.write {
-            if (realm.objects(Setting).count == 0) {
+            if (realm.objects(Setting.self).count == 0) {
                 realm.add(setting)
             }
             temp.upload = !self.uploadStatus

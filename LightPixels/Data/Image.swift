@@ -12,7 +12,7 @@ import RealmSwift
 class Image: Object {
     dynamic var name = ""
     dynamic var id = ""
-    dynamic var data: NSData? = nil
+    dynamic var data: Data? = nil
     
     override static func primaryKey() -> String? {
         return "id";
