@@ -15,7 +15,7 @@ import ImageIO
 import MobileCoreServices
 import AssetsLibrary
 
-class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class DrawGIFViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var canvasScrollView: UIScrollView!
     @IBOutlet weak var colorCollection: UICollectionView!
@@ -42,21 +42,20 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
         
         // remove blank of fist line
         self.automaticallyAdjustsScrollViewInsets = false
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     func initSetting() {
         
         var inputTextField: UITextField?
         
         let alertController: UIAlertController = UIAlertController(title: nil, message: NSLocalizedString("input_sidelength", comment: ""), preferredStyle: .alert)
         
-        let cancelAction: UIAlertAction = UIAlertAction(title: NSLocalizedString("fail", comment: ""), style: .cancel) { action -> Void in
+        let cancelAction: UIAlertAction = UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel) { action -> Void in
             self.navigationController?.popViewController(animated: true)
         }
         alertController.addAction(cancelAction)
@@ -180,13 +179,13 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
         self.goToPreview.isEnabled = false
     }
     
-    func tapHandle(_ gesture: UITapGestureRecognizer) {
+    @objc func tapHandle(_ gesture: UITapGestureRecognizer) {
         
         let location: CGPoint = gesture.location(in: self.imageView)
         drawRect(location)
     }
     
-    func panHandle(_ gesture: UIPanGestureRecognizer) {
+    @objc func panHandle(_ gesture: UIPanGestureRecognizer) {
         
         let location: CGPoint = gesture.location(in: self.imageView)
         let numOfTouches = gesture.numberOfTouches
@@ -199,7 +198,7 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
         }
     }
     
-    func pinchHandle(_ gesture: UIPinchGestureRecognizer) {
+    @objc func pinchHandle(_ gesture: UIPinchGestureRecognizer) {
         
     }
     
@@ -224,55 +223,6 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.containerView
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if (collectionView == self.colorCollection) {
-            return 24
-        } else {
-            return self.frameContainer.count
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if (collectionView == self.colorCollection) {
-            let cell = self.colorCollection.dequeueReusableCell(withReuseIdentifier: "gifColorCell", for: indexPath) as UICollectionViewCell
-            cell.backgroundColor = randomColor[indexPath.row]
-            return cell
-        } else {
-            let cell = self.frameCollection.dequeueReusableCell(withReuseIdentifier: "gifFrameCell", for: indexPath) as UICollectionViewCell
-           
-            let tempView = UIImageView(image: self.frameContainer[indexPath.row])
-            tempView.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height)
-            
-            if (cell.contentView.subviews.count > 0) {
-                for uv in cell.contentView.subviews {
-                    uv.removeFromSuperview()
-                }
-            }
-            
-            cell.contentView.addSubview(tempView)
-            cell.layer.borderWidth = 1
-            cell.layer.borderColor = UIColor.gray.cgColor
-            return cell
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        self.color = self.randomColor[indexPath.row]
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
-            
-            return CGSize(width: collectionView.bounds.height, height: collectionView.bounds.height)
     }
     
     @IBAction func undo(_ sender: UIButton) {
@@ -501,6 +451,61 @@ class DrawGIFViewController: UIViewController, UIScrollViewDelegate, UICollectio
             completion(nil, createGIFError.URLError)
         }
     }
+}
 
+extension DrawGIFViewController: UICollectionViewDataSource {
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if (collectionView == self.colorCollection) {
+            return 24
+        } else {
+            return self.frameContainer.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if (collectionView == self.colorCollection) {
+            let cell = self.colorCollection.dequeueReusableCell(withReuseIdentifier: "gifColorCell", for: indexPath) as UICollectionViewCell
+            cell.backgroundColor = randomColor[indexPath.row]
+            return cell
+        } else {
+            let cell = self.frameCollection.dequeueReusableCell(withReuseIdentifier: "gifFrameCell", for: indexPath) as UICollectionViewCell
+            
+            let tempView = UIImageView(image: self.frameContainer[indexPath.row])
+            tempView.frame = CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height)
+            
+            if (cell.contentView.subviews.count > 0) {
+                for uv in cell.contentView.subviews {
+                    uv.removeFromSuperview()
+                }
+            }
+            
+            cell.contentView.addSubview(tempView)
+            cell.layer.borderWidth = 1
+            cell.layer.borderColor = UIColor.gray.cgColor
+            return cell
+        }
+    }
+}
+
+extension DrawGIFViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        self.color = self.randomColor[indexPath.row]
+    }
+}
+
+extension DrawGIFViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: collectionView.bounds.height, height: collectionView.bounds.height)
+    }
 }

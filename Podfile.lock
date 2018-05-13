@@ -1,0 +1,36 @@
+PODS:
+  - Bolts/Tasks (1.9.0)
+  - Parse (1.17.1):
+    - Parse/Core (= 1.17.1)
+  - Parse/Core (1.17.1):
+    - Bolts/Tasks (~> 1.9)
+  - RandomColorSwift (1.0.0)
+  - Realm (3.4.0):
+    - Realm/Headers (= 3.4.0)
+  - Realm/Headers (3.4.0)
+  - RealmSwift (3.4.0):
+    - Realm (= 3.4.0)
+
+DEPENDENCIES:
+  - Parse
+  - RandomColorSwift
+  - RealmSwift
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - Bolts
+    - Parse
+    - RandomColorSwift
+    - Realm
+    - RealmSwift
+
+SPEC CHECKSUMS:
+  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  Parse: d3edaf8c7c722cb33cb83ba7821d015ae32d362d
+  RandomColorSwift: 9f85058b721665d52d239ca166a913e083506444
+  Realm: 9527c7baa2260f3a3aad6823d2d71cafff9b046b
+  RealmSwift: f40a747beaea1cadde7dcef41ee5a34b3001677b
+
+PODFILE CHECKSUM: 85e96fef4ce9f86873ffe3c2564a0679daca4259
+
+COCOAPODS: 1.5.0

@@ -176,7 +176,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         self.containerView.addSubview(backImageView)
     }
     
-    func tapHandle(_ gesture: UITapGestureRecognizer) {
+    @objc func tapHandle(_ gesture: UITapGestureRecognizer) {
         let location: CGPoint = gesture.location(in: self.imageView)
         drawRect(location)
         if gesture.state == UIGestureRecognizerState.recognized{
@@ -184,7 +184,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         }
     }
     
-    func panHandle(_ gesture: UIPanGestureRecognizer) {
+    @objc func panHandle(_ gesture: UIPanGestureRecognizer) {
         if gesture.state == UIGestureRecognizerState.recognized{
             self.pushHistory = true
             historyStackHandle(self.imageView.image!)
@@ -207,7 +207,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
         
     }
     
-    func pinchHandle(_ gesture: UIPinchGestureRecognizer) {
+    @objc func pinchHandle(_ gesture: UIPinchGestureRecognizer) {
         
     }
     
@@ -385,7 +385,7 @@ class DrawImageViewController: UIViewController, UIScrollViewDelegate, UICollect
     }
     
     
-    func saveInfo(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo:UnsafeRawPointer) {
+    @objc func saveInfo(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo:UnsafeRawPointer) {
         
         var alert: UIAlertController
         

@@ -10,9 +10,9 @@ import Foundation
 import RealmSwift
 
 class Image: Object {
-    dynamic var name = ""
-    dynamic var id = ""
-    dynamic var data: Data? = nil
+    @objc dynamic var name = ""
+    @objc dynamic var id = ""
+    @objc dynamic var data: Data? = nil
     
     override static func primaryKey() -> String? {
         return "id";

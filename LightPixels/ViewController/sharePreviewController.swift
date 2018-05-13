@@ -33,7 +33,7 @@ class SharePreviewController: UIViewController {
         UIImageWriteToSavedPhotosAlbum(self.preview.image!, self, #selector(saveInfo(_:didFinishSavingWithError:contextInfo:)), nil)
     }
     
-    func saveInfo(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
+    @objc func saveInfo(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
         
         var alert: UIAlertController
         

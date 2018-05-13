@@ -15,7 +15,7 @@
 "Fxu-mf-N39.title" = "アクション";
 
 /* Class = "UIButton"; normalTitle = "Add Frame"; ObjectID = "GML-8B-A4Y"; */
-"GML-8B-A4Y.normalTitle" = "フレームを追加";
+"GML-8B-A4Y.normalTitle" = "フレーム追加";
 
 /* Class = "UINavigationItem"; title = "Share"; ObjectID = "MIJ-3I-MS3"; */
 "MIJ-3I-MS3.title" = "シェア";

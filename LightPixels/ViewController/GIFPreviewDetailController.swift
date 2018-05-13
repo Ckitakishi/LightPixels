@@ -32,7 +32,7 @@ class GIFPreviewDetailController: UIViewController {
             repeats: true)
     }
     
-    func play() {
+    @objc func play() {
         self.preview.animationImages = self.imageData
         self.preview.animationDuration = 1.0
         self.preview.startAnimating()

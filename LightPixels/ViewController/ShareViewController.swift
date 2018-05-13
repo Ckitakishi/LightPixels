@@ -171,7 +171,7 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        sizeForItemAt indexPath: IndexPath) -> CGSize {
             
             return CGSize(width: (self.width! - 16) / 2, height: (self.width! - 16) / 2)
     }
@@ -184,7 +184,7 @@ class ShareViewController: UIViewController, UICollectionViewDataSource, UIColle
         }
     }
     
-    func refresh() {
+    @objc func refresh() {
         // TODO: all data has been retrived, maybe slowly?
         self.imageFile = []
         self.imgPFobj = []

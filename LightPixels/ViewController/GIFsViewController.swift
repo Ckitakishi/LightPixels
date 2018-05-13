@@ -87,7 +87,7 @@ class GIFsViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
+        sizeForItemAt indexPath: IndexPath) -> CGSize {
             
             return CGSize(width: (self.width! - 16) / 2, height: (self.width! - 16) / 2)
     }

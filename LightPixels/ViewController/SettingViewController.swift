@@ -107,7 +107,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         return 2
     }
     
-    func onSwitchAlbum(_ sender: UISwitch) {
+    @objc func onSwitchAlbum(_ sender: UISwitch) {
         let realm = try! Realm()
         let setting = Setting()
         let temp = realm.objects(Setting.self)[0]
@@ -120,7 +120,7 @@ class SettingViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    func onSwitchUpload(_ sender: UISwitch) {
+    @objc func onSwitchUpload(_ sender: UISwitch) {
         let realm = try! Realm()
         let setting = Setting()
         let temp = realm.objects(Setting.self)[0]

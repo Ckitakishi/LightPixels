@@ -53,7 +53,7 @@ class ImagePreviewController: UIViewController {
         self.shouldUploadImage(self.preview.image!)
     }
     
-    func saveInfo(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo:UnsafeRawPointer) {
+    @objc func saveInfo(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo:UnsafeRawPointer) {
         
         var alert: UIAlertController
         

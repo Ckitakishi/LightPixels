@@ -10,6 +10,6 @@ import Foundation
 import RealmSwift
 
 class Setting: Object {
-    dynamic var album = true
-    dynamic var upload = true
+    @objc dynamic var album = true
+    @objc dynamic var upload = true
 }
